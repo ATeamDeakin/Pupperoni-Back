@@ -190,7 +190,11 @@ function RefreshToken(req, res) {
 
 }
 
+function Logout(req, res) {
+    refreshTokens = refreshTokens.filter((c) => c != req.body.token)
 
+    res.status(204).send("Logged out")
+}
 module.exports = {
     PostNewUser,
     PostLogin,
@@ -198,7 +202,8 @@ module.exports = {
     FindUser,
     DeleteUserID,
     UpdateUser,
-    RefreshToken
+    RefreshToken,
+    Logout
 }
 
 

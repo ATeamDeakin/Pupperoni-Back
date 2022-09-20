@@ -54,6 +54,9 @@ app.post('/login', (req, res) => {
     controller.PostLogin(req, res)
 })
 
+app.delete("/logout", (req, res) => {
+    controller.Logout(req, res)
+})
 
 function validateToken(req, res, next) {
     //get token from request header
