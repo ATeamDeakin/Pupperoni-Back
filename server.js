@@ -30,22 +30,22 @@ app.post('/signup', (req, res) => {
 })
 
 //find all user
-app.get('/user', (req, res) => {
+app.get('/user', validateToken, (req, res) => {
     controller.FindAllUser(req, res)
 })
 
 //find specific user with user ID or username
-app.get('/user/:id', (req, res) => {
+app.get('/user/:id', validateToken, (req, res) => {
     controller.FindUser(req, res)
 })
 
 //delete with user ID or username
-app.delete('/user/:id', (req, res) => {
+app.delete('/user/:id', validateToken, (req, res) => {
     controller.DeleteUserID(req, res)
 })
 
 //change with user id or username
-app.patch('/user/:id', (req, res) => {
+app.patch('/user/:id', validateToken, (req, res) => {
     controller.UpdateUser(req, res)
 })
 
@@ -54,6 +54,23 @@ app.post('/login', (req, res) => {
     controller.PostLogin(req, res)
 })
 
+
+function validateToken(req, res, next) {
+    //get token from request header
+    const authHeader = req.headers["authorization"]
+    const token = authHeader.split(" ")[1]
+    //the request header contains the token "Bearer <token>", split the string and use the second value in the split array.
+    if (token == null) res.sendStatus(400).send("Token not present")
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            res.status(403).send("Token invalid")
+        }
+        else {
+            req.username = user
+            next() //proceed to the next action in the calling function
+        }
+    }) //end of jwt.verify()
+}
 
 //listen to 8080 port
 app.listen(process.env.SERVER_PORT, function (req, res) {

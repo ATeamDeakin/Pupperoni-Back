@@ -59,7 +59,7 @@ function PostLogin(req, res) {
             if (list == null) res.status(404).send("User does not exist")
             const match = bcrypt.compare(req.body.password, list.password)
             if (await bcrypt.compare(req.body.password, list.password)) {
-                
+
                 res.status(200).send("Logged in")
 
             }
@@ -168,13 +168,37 @@ async function UpdateUser(req, res) {
     }
 }
 
+function generateAccessToken(user) {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" })
+}
+// refreshTokens
+let refreshTokens = []
+function generateRefreshToken(user) {
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "20m" })
+    refreshTokens.push(refreshToken)
+    return refreshToken
+}
+
+function RefreshToken(req, res) {
+    if (!refreshTokens.includes(req.body.token)) res.status(400).send("Refresh Token Invalid")
+    refreshTokens = refreshTokens.filter((c) => c != req.body.token)
+    //remove the old refreshToken from the refreshTokens list
+    const accessToken = generateAccessToken({ user: req.body.username })
+    const refreshToken = generateRefreshToken({ user: req.body.username })
+    //generate new accessToken and refreshTokens
+    res.json({ accessToken: accessToken, refreshToken: refreshToken })
+
+}
+
+
 module.exports = {
     PostNewUser,
     PostLogin,
     FindAllUser,
     FindUser,
     DeleteUserID,
-    UpdateUser,  
+    UpdateUser,
+    RefreshToken
 }
 
 
