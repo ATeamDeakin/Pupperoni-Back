@@ -74,6 +74,11 @@ app.patch("/user/:id/uploadphoto", upload.single('myImage'), validateToken, (req
     controller.UploadUserPicture(req, res)
 })
 
+// Get profile picture
+app.get('/user/:id/picture', validateToken, (req, res, next) => {
+    controller.GetUserPicture(req, res)
+});
+
 function validateToken(req, res, next) {
     //get token from request header
     const authHeader = req.headers["authorization"]

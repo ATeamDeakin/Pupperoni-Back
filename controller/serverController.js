@@ -241,7 +241,28 @@ async function UploadUserPicture(req, res) {
     }
 }
 
-
+// Get profile picture with user ID or username
+async function GetUserPicture(req, res) {
+    try {
+        User.findById(req.params.id, (err, user) => {
+            if (!err) {
+                res.contentType(user.img.contentType);
+                res.send(user.img.data);
+            } else {
+                User.findOne({ username: req.params.id }, (err, user) => {
+                    if (user) {
+                        res.contentType(user.img.contentType);
+                        res.send(user.img.data);
+                    } else {
+                        res.send(err);
+                    }
+                })
+            }
+        });
+    } catch (err) {
+        console.error(`Error while getting user picture:`, err.message);
+    }
+}
 
 module.exports = {
     PostNewUser,
@@ -252,7 +273,8 @@ module.exports = {
     UpdateUser,
     UploadUserPicture,
     RefreshToken,
-    Logout
+    Logout,
+    GetUserPicture
 }
 
 
