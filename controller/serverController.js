@@ -60,7 +60,9 @@ function PostLogin(req, res) {
             const match = bcrypt.compare(req.body.password, list.password)
             if (await bcrypt.compare(req.body.password, list.password)) {
 
-                res.status(200).send("Logged in")
+                const accessToken = generateAccessToken({ user: req.body.name })
+                const refreshToken = generateRefreshToken({ user: req.body.name })
+                res.json({ accessToken: accessToken, refreshToken: refreshToken })
 
             }
             else {
