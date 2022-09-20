@@ -195,6 +195,52 @@ function Logout(req, res) {
 
     res.status(204).send("Logged out")
 }
+
+//Upload picture for certain user with user ID or username
+async function UploadUserPicture(req, res) {
+    try {
+        var img = fs.readFileSync(req.file.path);
+        fs.unlinkSync(req.file.path);
+        var encode_img = img.toString('base64');
+        var final_img = {
+            contentType: req.file.mimetype,
+            data: new Buffer(encode_img, 'base64')
+        };
+        console.log(final_img)
+        User.update(
+            { _id: req.params.id },
+            {
+                $set: {
+                    img: final_img
+                }
+            },
+            (err) => {
+                if (!err) { res.send('Successfully upload a picture for a user with user id') }
+                else {
+                    User.update(
+                        { username: req.params.id },
+                        {
+                            $set: {
+                                img: final_img
+                            }
+                        },
+                        (err) => {
+                            if (!err) { res.send('Successfully upload a picture for a user with username') }
+                            else {
+                                res.send("User does not exist")
+                            }
+                        }
+                    )
+                }
+            }
+        )
+    } catch (err) {
+        console.error(`Error while updating user picture:`, err.message);
+    }
+}
+
+
+
 module.exports = {
     PostNewUser,
     PostLogin,
@@ -202,6 +248,7 @@ module.exports = {
     FindUser,
     DeleteUserID,
     UpdateUser,
+    UploadUserPicture,
     RefreshToken,
     Logout
 }

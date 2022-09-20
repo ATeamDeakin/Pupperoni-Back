@@ -58,6 +58,22 @@ app.delete("/logout", (req, res) => {
     controller.Logout(req, res)
 })
 
+// Set storage
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+})
+var upload = multer({ storage: storage })
+
+//Upload picture for certain user
+app.patch("/user/:id/uploadphoto", upload.single('myImage'), validateToken, (req, res) => {
+    controller.UploadUserPicture(req, res)
+})
+
 function validateToken(req, res, next) {
     //get token from request header
     const authHeader = req.headers["authorization"]
