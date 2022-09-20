@@ -1,7 +1,8 @@
 const User = require("../models/User")
 const bcrypt = require("bcrypt")
 const fs = require("fs")
-
+const jwt = require("jsonwebtoken")
+const saltRounds = 10
 require("dotenv").config()
 
 const port = process.env.TOKEN_SERVER_PORT
@@ -131,40 +132,44 @@ async function DeleteUserID(req, res) {
 //change with user ID or username
 async function UpdateUser(req, res) {
     try {
-        const salt = bcrypt.genSaltSync(saltRounds);
+        //encrypt + hash
+        const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
-        User.update(
+        User.updateOne(
             { _id: req.params.id },
             {
                 $set: {
-                    //we will add other fields later
                     username: req.body.username,
                     password: hash,
-                    phone: req.body.phone,
+                    telephone: req.body.telephone,
                     email: req.body.email,
-                }
+                },
             },
             (err) => {
-                if (!err) { res.send('Successfully update a user with user id') }
-                else {
-                    User.update({ username: req.params.id },
+                if (!err) {
+                    res.send("Successfully update a user with user id");
+                } else {
+                    User.updateOne(
+                        { username: req.params.id },
                         {
                             $set: {
                                 username: req.body.username,
                                 password: hash,
-                                phone: req.body.phone,
+                                telephone: req.body.telephone,
                                 email: req.body.email,
-                            }
-                        }, (err) => {
-                            if (!err) { res.send('Successfully update a user with username') }
-                            else {
+                            },
+                        },
+                        (err) => {
+                            if (!err) {
+                                res.send("Successfully update a user with username");
+                            } else {
                                 res.send("User does not exist");
                             }
                         }
-                    )
+                    );
                 }
             }
-        )
+        );
     } catch (err) {
         console.error(`Error while updating user:`, err.message);
     }
@@ -209,7 +214,7 @@ async function UploadUserPicture(req, res) {
             data: new Buffer(encode_img, 'base64')
         };
         console.log(final_img)
-        User.update(
+        User.updateOne(
             { _id: req.params.id },
             {
                 $set: {
@@ -219,7 +224,7 @@ async function UploadUserPicture(req, res) {
             (err) => {
                 if (!err) { res.send('Successfully upload a picture for a user with user id') }
                 else {
-                    User.update(
+                    User.updateOne(
                         { username: req.params.id },
                         {
                             $set: {

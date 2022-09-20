@@ -2,7 +2,10 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
 const User = require("./models/User")
-
+multer = require("multer")
+const saltRounds = 10
+const controller = require("./controller/serverController")
+const jwt = require("jsonwebtoken")
 require('dotenv').config();
 
 
@@ -39,14 +42,17 @@ app.get('/user/:id', validateToken, (req, res) => {
     controller.FindUser(req, res)
 })
 
-//delete with user ID or username
-app.delete('/user/:id', validateToken, (req, res) => {
-    controller.DeleteUserID(req, res)
-})
-
 //change with user id or username
 app.patch('/user/:id', validateToken, (req, res) => {
     controller.UpdateUser(req, res)
+})
+
+app.post("/refreshToken", (req, res) => {
+    controller.RefreshToken(req, res)
+})
+//delete with user ID or username
+app.delete('/user/:id', validateToken, (req, res) => {
+    controller.DeleteUserID(req, res)
 })
 
 //find a user with username: return password
