@@ -29,6 +29,26 @@ app.post('/signup', (req, res) => {
     controller.PostNewUser(req, res)
 })
 
+//find all user
+app.get('/user', (req, res) => {
+    controller.FindAllUser(req, res)
+})
+
+//find specific user with user ID or username
+app.get('/user/:id', (req, res) => {
+    controller.FindUser(req, res)
+})
+
+//delete with user ID or username
+app.delete('/user/:id', (req, res) => {
+    controller.DeleteUserID(req, res)
+})
+
+//change with user id or username
+app.patch('/user/:id', (req, res) => {
+    controller.UpdateUser(req, res)
+})
+
 //find a user with username: return password
 app.post('/login', (req, res) => {
     controller.PostLogin(req, res)

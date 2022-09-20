@@ -10,6 +10,7 @@ const port = process.env.TOKEN_SERVER_PORT
 //send user value to MongoDB
 async function PostNewUser(req, res) {
     try {
+        //encrypt + hash
         const salt = bcrypt.genSaltSync(saltRounds);
         const hash = bcrypt.hashSync(req.body.password, salt);
 
@@ -58,9 +59,8 @@ function PostLogin(req, res) {
             if (list == null) res.status(404).send("User does not exist")
             const match = bcrypt.compare(req.body.password, list.password)
             if (await bcrypt.compare(req.body.password, list.password)) {
-                const accessToken = generateAccessToken({ user: req.body.name })
-                const refreshToken = generateRefreshToken({ user: req.body.name })
-                res.json({ accessToken: accessToken, refreshToken: refreshToken })
+                
+                res.status(200).send("Logged in")
 
             }
             else {
@@ -73,6 +73,108 @@ function PostLogin(req, res) {
     }
 }
 
-module.exports = {
-    
+//find all user
+async function FindAllUser(req, res) {
+    try {
+        User.find((err, list) => {
+            if (err) { res.send(err) }
+            else { res.send(list) }
+        })
+    } catch (err) {
+        console.error(`Error while getting all users:`, err.message);
+    }
 }
+
+//find specific user with user ID or username
+async function FindUser(req, res) {
+    try {
+        User.findOne({ _id: req.params.id }, (err, list) => {
+            if (list) (res.send(list))
+            else {
+                User.findOne({ username: req.params.id }, (err, list) => {
+                    if (list) {
+                        res.send(list)
+                    }
+                    else res.send("Cannot find a user with given id or username")
+                })
+            }
+        })
+    } catch (err) {
+        console.error(`Error while getting user by ID:`, err.message);
+    }
+}
+
+//delete with user ID or username
+async function DeleteUserID(req, res) {
+    try {
+        User.deleteOne({ _id: req.params.id }, function (err, list) {
+            if (err) {
+                User.deleteOne({ username: req.params.id }, function (err, list) {
+                    if (err) {
+                        res.send("Cannot find user id or username");
+                    }
+                    else {
+                        res.send(list);
+                    }
+                })
+            } else {
+                res.send(list);
+            }
+        });
+    } catch (err) {
+        console.error(`Error while deleting user by ID:`, err.message);
+    }
+}
+
+//change with user ID or username
+async function UpdateUser(req, res) {
+    try {
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hash = bcrypt.hashSync(req.body.password, salt);
+        User.update(
+            { _id: req.params.id },
+            {
+                $set: {
+                    //we will add other fields later
+                    username: req.body.username,
+                    password: hash,
+                    phone: req.body.phone,
+                    email: req.body.email,
+                }
+            },
+            (err) => {
+                if (!err) { res.send('Successfully update a user with user id') }
+                else {
+                    User.update({ username: req.params.id },
+                        {
+                            $set: {
+                                username: req.body.username,
+                                password: hash,
+                                phone: req.body.phone,
+                                email: req.body.email,
+                            }
+                        }, (err) => {
+                            if (!err) { res.send('Successfully update a user with username') }
+                            else {
+                                res.send("User does not exist");
+                            }
+                        }
+                    )
+                }
+            }
+        )
+    } catch (err) {
+        console.error(`Error while updating user:`, err.message);
+    }
+}
+
+module.exports = {
+    PostNewUser,
+    PostLogin,
+    FindAllUser,
+    FindUser,
+    DeleteUserID,
+    UpdateUser,  
+}
+
+
