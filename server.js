@@ -10,7 +10,7 @@ require('dotenv').config();
 
 
 //app
-const app = express();
+let app = express();
 const cors = require("cors");
 
 app.use(
@@ -104,5 +104,8 @@ function validateToken(req, res, next) {
 
 //listen to 8080 port
 app.listen(process.env.SERVER_PORT, function (req, res) {
-    console.log("Web server is running in " + process.env.SERVER_PORT + "...");
+    console.log("Web server is running on " + process.env.SERVER_PORT + "...");
 })
+
+
+module.exports = app;
