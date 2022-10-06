@@ -37,6 +37,7 @@ async function PostNewUser(req, res) {
             people_friendliness: req.body.people_friendliness,
             prey_drive: req.body.prey_drive,
             training: req.body.training,
+            liked_by: req.body.liked_by,
             img: final_img
         });
 
@@ -269,6 +270,25 @@ async function GetUserPicture(req, res) {
     }
 }
 
+async function Like(req, res) {
+    
+    User.updateOne(
+        { username: req.params.id },
+        {
+            $push: {
+                liked_by: req.body.byuser
+            },
+        },
+        (err) => {
+            if (!err) {
+                res.send({ "user": "Profile Liked successfully" });
+            } else {
+                res.send({ "user": "doesn't exist" });
+            }
+        }
+    );
+}
+
 module.exports = {
     PostNewUser,
     PostLogin,
@@ -279,7 +299,8 @@ module.exports = {
     UploadUserPicture,
     RefreshToken,
     Logout,
-    GetUserPicture
+    GetUserPicture,
+    Like
 }
 
 
