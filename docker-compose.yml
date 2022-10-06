@@ -1,0 +1,22 @@
+version: '3'
+services:
+
+  pupperoni-frontend:
+    image: pupperoni-frontend
+    build:
+      context: ../Pupperoni-Frontend
+      dockerfile: Dockerfile-dev
+    container_name: pupperoni-frontend
+    ports:
+      - "3000:3000"
+    restart: "no"
+
+  pupperoni-backend:
+    image: pupperoni-backend
+    build:
+      context: ./
+      dockerfile: Dockerfile-dev
+    container_name: pupperoni-backend
+    ports:
+      - "8080:8080"
+    restart: "no"
