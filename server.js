@@ -64,9 +64,9 @@ app.delete("/logout", (req, res) => {
     controller.Logout(req, res)
 })
 
-app.get('/like/:id', (req, res) => {
-    controller.Like(req, res)
-})
+// app.get('/like/:id', (req, res) => {
+//     controller.Like(req, res)
+// })
 
 // Set storage
 var storage = multer.diskStorage({
