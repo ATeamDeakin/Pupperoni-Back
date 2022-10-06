@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
         people_friendliness: Number,
         prey_drive: Number,
         training: String,
+        liked_by: [String],
         img: { data: Buffer, contentType: String }
     }
 )

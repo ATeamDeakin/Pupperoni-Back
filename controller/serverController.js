@@ -270,24 +270,24 @@ async function GetUserPicture(req, res) {
     }
 }
 
-// async function Like(req, res) {
+async function Like(req, res) {
     
-//     User.updateOne(
-//         { username: req.params.id },
-//         {
-//             $push: {
-//                 liked_by: req.body.byuser
-//             },
-//         },
-//         (err) => {
-//             if (!err) {
-//                 res.send({ "user": "Profile Liked successfully" });
-//             } else {
-//                 res.send({ "user": "doesn't exist" });
-//             }
-//         }
-//     );
-// }
+    User.updateOne(
+        { username: req.params.id },
+        {
+            $push: {
+                liked_by: req.body.byuser
+            },
+        },
+        (err) => {
+            if (!err) {
+                res.send({ "user": "Profile Liked successfully" });
+            } else {
+                res.send({ "user": "doesn't exist" });
+            }
+        }
+    );
+}
 
 module.exports = {
     PostNewUser,
@@ -299,7 +299,8 @@ module.exports = {
     UploadUserPicture,
     RefreshToken,
     Logout,
-    GetUserPicture
+    GetUserPicture,
+    Like
 }
 
 
