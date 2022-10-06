@@ -1,7 +1,7 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
-const User = require("./models/User")
+const User = require("./models/user")
 multer = require("multer")
 const saltRounds = 10
 const controller = require("./controller/serverController")

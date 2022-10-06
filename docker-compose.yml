@@ -4,7 +4,7 @@ services:
   pupperoni-frontend:
     image: pupperoni-frontend
     build:
-      context: ../Pupperoni-Frontend
+      context: ../Pupperoni-Front
       dockerfile: Dockerfile-dev
     container_name: pupperoni-frontend
     ports:
